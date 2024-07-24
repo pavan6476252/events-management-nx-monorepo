@@ -13,32 +13,45 @@ export class AddressService {
   ) {}
 
   async createAddress(
+    userId: string,
     createAddressDto: CreateAddressDto
   ): Promise<AddressEntity> {
-    const address = this.addressRepository.create(createAddressDto);
+    const address = this.addressRepository.create({
+      user: { id: userId },
+      ...createAddressDto,
+    });
     return this.addressRepository.save(address);
   }
 
   async updateAddress(
+    userId: string,
     id: string,
     updateAddressDto: UpdateAddressDto
   ): Promise<AddressEntity> {
-    await this.addressRepository.update(id, updateAddressDto);
+    await this.addressRepository.update(
+      { id, user: { id: userId } },
+      updateAddressDto
+    );
     return this.addressRepository.findOne({ where: { id } });
   }
 
   async findAll(): Promise<AddressEntity[]> {
     return this.addressRepository.find({ relations: ["user"] });
   }
+  async findAllByUser(userId: string): Promise<AddressEntity[]> {
+    return this.addressRepository.findBy({
+      user: { id: userId },
+    });
+  }
 
-  async findOne(id: string): Promise<AddressEntity> {
+  async findOneByUser(userId: string, id: string): Promise<AddressEntity> {
     return this.addressRepository.findOne({
-      where: { id },
+      where: { id, user: { id: userId } },
       relations: ["user"],
     });
   }
 
-  async remove(id: string): Promise<void> {
-    await this.addressRepository.delete(id);
+  async remove(userId: string, id: string): Promise<void> {
+    await this.addressRepository.delete({ id, user: { id: userId } });
   }
 }

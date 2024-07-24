@@ -1,8 +1,10 @@
 import { Resolver, Query, Mutation, Args, ID } from "@nestjs/graphql";
-import { AddressService } from "./address.service"; 
+import { AddressService } from "./address.service";
 import { AddressEntity } from "@events/shared";
 import { CreateAddressDto } from "../dto/create-address.dto";
 import { UpdateAddressDto } from "../dto/update-address.dto";
+import { Request, UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 @Resolver(() => AddressEntity)
 export class AddressResolver {
@@ -13,27 +15,46 @@ export class AddressResolver {
     return this.addressService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Query(() => [AddressEntity])
+  async getUserAddresses(@Request() req) {
+    const { userId } = req.user;
+    return this.addressService.findAllByUser(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Query(() => AddressEntity)
-  getAddress(@Args('id', { type: () => ID }) id: string) {
-    return this.addressService.findOne(id);
+  async getUserAddress(@Request() req, @Args("id") id: string) {
+    const { userId } = req.user;
+    return this.addressService.findOneByUser(userId, id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => AddressEntity)
-  createAddress(@Args('createAddressDto') createAddressDto: CreateAddressDto) {
-    return this.addressService.createAddress(createAddressDto);
+  createAddress(
+    @Request() req,
+    @Args("createAddressDto") createAddressDto: CreateAddressDto
+  ) {
+    const { userId } = req.user;
+    return this.addressService.createAddress(userId, createAddressDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => AddressEntity)
   updateAddress(
-    @Args('id', { type: () => ID }) id: string,
-    @Args('updateAddressDto') updateAddressDto: UpdateAddressDto
+    @Request() req,
+    @Args("id", { type: () => ID }) id: string,
+    @Args("updateAddressDto") updateAddressDto: UpdateAddressDto
   ) {
-    return this.addressService.updateAddress(id, updateAddressDto);
+    const { userId } = req.user;
+    return this.addressService.updateAddress(userId, id, updateAddressDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Boolean)
-  removeAddress(@Args('id', { type: () => ID }) id: string) {
-    this.addressService.remove(id);
+  removeAddress(@Request() req, @Args("id", { type: () => ID }) id: string) {
+    const { userId } = req.user;
+    this.addressService.remove(userId, id);
     return true;
   }
 }
