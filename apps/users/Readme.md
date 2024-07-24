@@ -17,18 +17,20 @@ This microservice handles user-related operations including user registration, l
 - [x] Refresh Tokens Implementation
 - [x] User Logout
 - [x] Prevent Multiple Auth Records for Same Device
+- [x] User Address Management
+- [x] User Profile management
 
 ### Features to be Completed
-- [ ] User Profile Retrieval
-- [ ] User Address Management
+- [ ] Cloudinary and file upload module
+- [ ] User profile pictures 
+- [ ] Password Reset Functionality
+- [ ] Role-Based Access Control (RBAC)
 - [ ] Unit Testing
 - [ ] Integration Testing
 
 ### Additional Features to be Completed
-- [ ] Password Reset Functionality
 - [ ] Email Verification for New Users
 - [ ] Two-Factor Authentication (2FA)
-- [ ] Role-Based Access Control (RBAC)
 - [ ] Activity Logging and Monitoring
 - [ ] Account Deactivation/Deletion
 - [ ] User Profile Update
